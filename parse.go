@@ -21,7 +21,7 @@
 // - "localhost:8080"
 //   url.Parse: Host == "", Scheme == "localhost:8080"
 // - "10.10.10.10/url/"
-//   url.Parse: Returns and error <why?>
+//   url.Parse: Returns an error <why?>
 // - "localhost:"
 //   url.Parse: Host == "localhost:" <doesn't strip the ':'>
 //
