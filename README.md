@@ -1,6 +1,6 @@
-# parseurl
+# ParseURL
 
-Parseurl is a simple wrapper that fixes some of the weird issues that the standard Golang 'url.Parse' function does.
+ParseURL is a simple wrapper that fixes some of the weird issues that the standard Golang 'url.Parse' function does.
 
 Fixes things such as
 
