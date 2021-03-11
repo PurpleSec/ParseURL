@@ -34,7 +34,6 @@ package parseurl
 
 import (
 	"errors"
-	"fmt"
 	"net/url"
 	"strings"
 )
@@ -42,6 +41,15 @@ import (
 // ErrInvalidURL is a error that is used to indicate a non-standard error caught by the 'Parse' function. The
 // returned errors will wrap this error.
 var ErrInvalidURL = errors.New("URL is invalid")
+
+type errStr string
+
+func (errStr) Unwrap() error {
+	return ErrInvalidURL
+}
+func (e errStr) Error() string {
+	return string(e)
+}
 
 // Parse parses rawurl into a URL structure.
 //
@@ -60,9 +68,9 @@ func Parse(rawurl string) (*url.URL, error) {
 		err error
 	)
 	if i == 0 && len(rawurl) > 2 && rawurl[1] != '/' {
-		u, err = url.Parse(fmt.Sprintf("/%s", rawurl))
+		u, err = url.Parse("/" + rawurl)
 	} else if i == -1 || i+1 >= len(rawurl) || rawurl[i+1] != '/' {
-		u, err = url.Parse(fmt.Sprintf("//%s", rawurl))
+		u, err = url.Parse("//" + rawurl)
 	} else {
 		u, err = url.Parse(rawurl)
 	}
@@ -70,10 +78,10 @@ func Parse(rawurl string) (*url.URL, error) {
 		return nil, err
 	}
 	if len(u.Host) == 0 {
-		return nil, fmt.Errorf("parse %q: empty host field, %w", rawurl, ErrInvalidURL)
+		return nil, errStr(`parse "` + rawurl + `": empty host field`)
 	}
 	if u.Host[len(u.Host)-1] == ':' {
-		return nil, fmt.Errorf("parse %q: invalid port specified, %w", rawurl, ErrInvalidURL)
+		return nil, errStr(`parse "` + rawurl + `": invalid port specified`)
 	}
 	return u, nil
 }
