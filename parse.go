@@ -1,4 +1,4 @@
-// Copyright 2021 PurpleSec Team
+// Copyright 2021 - 2022 PurpleSec Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,19 +38,6 @@ import (
 	"strings"
 )
 
-// ErrInvalidURL is a error that is used to indicate a non-standard error caught by the 'Parse' function. The
-// returned errors will wrap this error.
-var ErrInvalidURL = errors.New("URL is invalid")
-
-type errStr string
-
-func (errStr) Unwrap() error {
-	return ErrInvalidURL
-}
-func (e errStr) Error() string {
-	return string(e)
-}
-
 // Parse parses rawurl into a URL structure.
 //
 // The rawurl may be relative (a path, without a host) or absolute
@@ -58,9 +45,10 @@ func (e errStr) Error() string {
 // without a scheme is invalid but may not necessarily return an
 // error, due to parsing ambiguities.
 //
-// This function is a modified version of the standard 'url.Parse' function that will handle and fix any errors
-// that occur during Parsing. This function also includes additional error checks that will prevent some common
-// formatting issues from occuring without an error.
+// This function is a modified version of the standard 'url.Parse' function that
+// will handle and fix any errors that occur during Parsing. This function also
+// includes additional error checks that will prevent some common formatting
+// issues from occuring without an error.
 func Parse(rawurl string) (*url.URL, error) {
 	var (
 		i   = strings.IndexRune(rawurl, '/')
@@ -78,10 +66,10 @@ func Parse(rawurl string) (*url.URL, error) {
 		return nil, err
 	}
 	if len(u.Host) == 0 {
-		return nil, errStr(`parse "` + rawurl + `": empty host field`)
+		return nil, errors.New(`parse "` + rawurl + `": empty host field`)
 	}
 	if u.Host[len(u.Host)-1] == ':' {
-		return nil, errStr(`parse "` + rawurl + `": invalid port specified`)
+		return nil, errors.New(`parse "` + rawurl + `": invalid port specified`)
 	}
 	return u, nil
 }
